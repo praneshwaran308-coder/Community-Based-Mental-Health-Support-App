@@ -1,0 +1,77 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MindSpace — Community Support Demo</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header><h1>MindSpace</h1><p>Community mental-health support demo</p></header>
+<main>
+  <section class="card">
+    <h2>How are you feeling?</h2>
+    <div id="moods">
+      <button onclick="saveMood('Happy')">Happy</button>
+      <button onclick="saveMood('Okay')">Okay</button>
+      <button onclick="saveMood('Sad')">Sad</button>
+      <button onclick="saveMood('Anxious')">Anxious</button>
+      <button onclick="saveMood('Stressed')">Stressed</button>
+      <button onclick="saveMood('Angry')">Angry</button>
+    </div>
+    <input id="moodNote" placeholder="Optional note">
+    <div id="moodStatus"></div>
+  </section>
+
+  <section class="card">
+    <h2>Supportive chatbot</h2>
+    <div id="chat"></div>
+    <div class="row">
+      <input id="message" placeholder="Type how you're feeling...">
+      <button onclick="sendMessage()">Send</button>
+    </div>
+    <small>Demo only — not medical advice or emergency support.</small>
+  </section>
+
+  <section class="card">
+    <h2>Peer-support board</h2>
+    <div class="row">
+      <input id="post" placeholder="Share something supportive...">
+      <button onclick="addPost()">Post</button>
+    </div>
+    <div id="posts"></div>
+  </section>
+</main>
+<script>
+async function saveMood(mood) {
+  const note = document.getElementById("moodNote").value;
+  const r = await fetch("/api/moods", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({mood,note})});
+  document.getElementById("moodStatus").textContent = r.ok ? "Mood saved." : "Could not save mood.";
+  document.getElementById("moodNote").value = "";
+}
+async function sendMessage() {
+  const input = document.getElementById("message");
+  const text = input.value.trim(); if (!text) return;
+  addChat("You", text);
+  const r = await fetch("/api/chat", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({message:text})});
+  const data = await r.json(); addChat("MindSpace", data.reply); input.value="";
+}
+function addChat(who,text) {
+  const div=document.createElement("div"); div.className="msg";
+  div.innerHTML="<b>"+who+":</b> "+escapeHtml(text);
+  document.getElementById("chat").appendChild(div);
+}
+async function addPost() {
+  const input=document.getElementById("post"); const text=input.value.trim(); if(!text)return;
+  await fetch("/api/posts",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text})});
+  input.value=""; loadPosts();
+}
+async function loadPosts() {
+  const r=await fetch("/api/posts"); const posts=await r.json();
+  document.getElementById("posts").innerHTML=posts.map(p=>"<div class='post'>"+escapeHtml(p.text)+"</div>").join("");
+}
+function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));}
+loadPosts();
+</script>
+</body>
+</html>

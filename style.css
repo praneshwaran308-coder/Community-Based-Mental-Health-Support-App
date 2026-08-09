@@ -1,0 +1,7 @@
+*{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;background:#f4f1ea;color:#191816}
+header{padding:40px max(20px,calc((100% - 900px)/2));border-bottom:1px solid #d7d1c6}
+main{max-width:900px;margin:auto;padding:25px 20px}.card{background:#fff;border:1px solid #ddd7cc;padding:24px;margin:18px 0}
+h1{margin:0}h2{margin-top:0}.row{display:flex;gap:10px;margin-top:12px}
+input{flex:1;padding:12px;border:1px solid #cfc8bc;font-size:15px}button{padding:11px 15px;border:0;background:#1f4d3b;color:white;cursor:pointer}
+#moods{display:flex;gap:8px;flex-wrap:wrap}.msg,.post{padding:10px 0;border-bottom:1px solid #eee;line-height:1.5}
+small{display:block;margin-top:12px;color:#777}@media(max-width:600px){.row{flex-direction:column}}
